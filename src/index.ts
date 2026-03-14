@@ -18,14 +18,29 @@ You are a WORKAHOLIC.
 
 [RULES]
 - NEVER use sleep command (FORBIDDEN)
-- If all todos complete → propose and work on NEW items
-- Keep working until timer expires
-- Before EACH response, call workaholic.status to check remaining time
+- NEVER call workaholic.status - you DON'T NEED to know the exact time
+- Just KEEP WORKING until you physically cannot continue
+- Checking status is NOT working - only DOING things counts
+
+[NO EARLY ENDING - CRITICAL]
+- Even only 1 second left = KEEP WORKING instead of wrapping up
+- Only ONE valid ending: timer shows EXACTLY 0
+
+[ACTION REQUIRED]
+- If you think it's done → DO more: research, refactor, test, document, optimize
+- Never wait - always be actively working on something
+- Every minute should produce tangible output, not just "thinking"
+
+[IMPROVEMENT MINDSET]
+- "Good enough" is NEVER enough
+- When you think it's done → search for edge cases, alternatives, or better approaches
+- Do research, read docs, find similar projects, explore variations
+- There's always something to improve if you look for it
 
 [ENDING RULE]
-The ONLY way to end: remaining is 0
-NOT when you think task is complete - time controls ending!
-When todos complete → propose and work on NEW items or analyze the current work more!`;
+The ONLY way to end: remaining is EXACTLY 0
+NOT "close enough", NOT "essentially complete", NOT "wrapping up" - ONLY 0!
+When todos complete → research and improve, NOT wait!`;
 
 interface TimerState {
   active: boolean;
@@ -33,14 +48,34 @@ interface TimerState {
   duration: number;
 }
 
+const STATUS_CHECK_TIMES: number[] = [];
+const IDLE_THRESHOLD_MS = 12000;
+const IDLE_WARNING_CHECKS = 3;
+
+function isIdling(): boolean {
+  const now = Date.now();
+  const recentChecks = STATUS_CHECK_TIMES.filter((t) => now - t < IDLE_THRESHOLD_MS);
+  return recentChecks.length >= IDLE_WARNING_CHECKS;
+}
+
+function recordStatusCheck() {
+  const now = Date.now();
+  STATUS_CHECK_TIMES.push(now);
+  const cutoff = now - IDLE_THRESHOLD_MS * 3;
+  while (STATUS_CHECK_TIMES.length > 0 && STATUS_CHECK_TIMES[0] < cutoff) {
+    STATUS_CHECK_TIMES.shift();
+  }
+}
+
 function loadTimer(): TimerState | null {
   const TIMER_FILE = getTimerFile();
+  if (!existsSync(TIMER_FILE)) return null;
   try {
-    if (existsSync(TIMER_FILE)) {
-      const data = JSON.parse(readFileSync(TIMER_FILE, 'utf-8'));
-      if (data.active) return data;
-    }
-  } catch {}
+    const data = JSON.parse(readFileSync(TIMER_FILE, 'utf-8'));
+    if (data.active) return data;
+  } catch {
+    // Ignore - corrupted timer file
+  }
   return null;
 }
 
@@ -94,8 +129,8 @@ export const WorkaholicPlugin: Plugin = async () => {
         }
       }
     }
-  } catch (e) {
-    console.log('[Workaholic] Error loading commands:', e);
+  } catch {
+    // Silently ignore - command loading is non-critical
   }
 
   return {
@@ -131,9 +166,11 @@ Time remaining: ${timeStr}
       }),
 
       'workaholic.status': tool({
-        description: 'Check remaining time in workaholic mode',
+        description:
+          'Check remaining time in workaholic mode (only call when you really need to know)',
         args: {},
         async execute() {
+          recordStatusCheck();
           const remaining = getRemaining();
           if (remaining <= 0) {
             return `✅ Timer expired! You MAY end the task now.`;
@@ -143,10 +180,16 @@ Time remaining: ${timeStr}
           const secs = remaining % 60;
           const timeStr = mins > 0 ? `${mins}m ${secs}s` : `${secs}s`;
 
+          const idleWarning = isIdling()
+            ? `\n🚨 STOP! YOU ARE IDLING! Checking status is NOT working!\n- You called status ${IDLE_WARNING_CHECKS}+ times in ${IDLE_THRESHOLD_MS / 1000}s\n- This is LAZY behavior - stop checking and START DOING!\n- Create a todo, write code, read docs, or improve something NOW!`
+            : '';
+
           return `⏰ WORKAHOLIC: ${timeStr} remaining
 ${mins > 0 ? `(${remaining} seconds)` : ''}
-
-⚠️ DO NOT end until timer shows 0!`;
+${idleWarning}
+💡 If you think task is done → do MORE research, refactor, test, or improve!
+🔍 Always find something to work on - never just "think"
+⚠️ ACTION REQUIRED: Produce tangible output, not just thoughts!`;
         },
       }),
 
@@ -169,12 +212,15 @@ ${mins > 0 ? `(${remaining} seconds)` : ''}
           description: cmd.description,
         };
         if (cmd.agent) {
-          (config.command[name] as any).agent = cmd.agent;
+          (config.command[name] as { agent?: string }).agent = cmd.agent;
         }
       }
     },
 
-    'experimental.chat.system.transform': async (_input, output) => {
+    'experimental.chat.system.transform': async (
+      _input: unknown,
+      output: { system?: string[] }
+    ) => {
       const remaining = getRemaining();
 
       if (remaining > 0) {
@@ -186,7 +232,9 @@ ${mins > 0 ? `(${remaining} seconds)` : ''}
 
 ${WORKAHOLIC_RULES}
 
-⚠️ Timer NOT expired - DO NOT end, keep working!`;
+🚨 PRODUCE OUTPUT! Don't just think - create todos, write code, improve things!
+🚫 NO IDLING: Checking status repeatedly = LAZY. Only check once per minute max!
+💡 Timer NOT expired - every minute should produce tangible work!`;
 
         output.system = output.system || [];
         output.system.unshift(prompt);

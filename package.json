@@ -1,6 +1,6 @@
 {
   "name": "opencode-workaholic",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Your OpenCode becomes a workaholic. Prevents AI from ending tasks prematurely.",
   "author": {
     "name": "Roderick Qiu",
@@ -9,6 +9,8 @@
   },
   "license": "MIT",
   "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -17,8 +19,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/RoderickQiu/opencode-workaholic"
+    "url": "git+https://github.com/RoderickQiu/opencode-workaholic.git"
   },
+  "bugs": {
+    "url": "https://github.com/RoderickQiu/opencode-workaholic/issues"
+  },
+  "keywords": ["opencode", "plugin", "workaholic", "ai", "productivity", "timer", "focus", "deep-work", "task-duration", "task-management", "enforcement", "concentration", "agent", "automation"],
+  "homepage": "https://github.com/RoderickQiu/opencode-workaholic#readme",
   "publishConfig": {
     "access": "public",
     "provenance": true
