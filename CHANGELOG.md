@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.2.1 (2025-03-15)
+
+### Features
+
+- **CLI installer**: Added `bunx opencode-workaholic@latest install` support
+- **Easy installation**: Users can now install with one command
+
+### Improvements
+
+- Added `bin` field to package.json for CLI entry point
+
+---
+
 ## 0.2.0 (2025-03-15)
 
 ### Features
