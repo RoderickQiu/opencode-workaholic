@@ -71,6 +71,14 @@ Call workaholic.stop to end workaholic mode
 
 ### Install Plugin
 
+#### Use Bunx
+
+```bash
+bunx opencode-workaholic@latest install
+```
+
+#### Manual Installation
+
 ```bash
 # Clone or copy the plugin to your plugins directory
 # Then add to your OpenCode config
@@ -88,7 +96,7 @@ Or use local path:
 
 ```json
 {
-  "plugins": ["file:///Users/r/Documents/ai-playground/opencode-workaholic"]
+  "plugins": ["file:///<path-to>/opencode-workaholic"]
 }
 ```
 
@@ -116,3 +124,4 @@ MIT License. See the [LICENSE](LICENSE) file for details.
 
 - [OpenCode](https://opencode.ai) - The platform that makes this possible
 - [opencode-plugin-template](https://github.com/zenobi-us/opencode-plugin-template) - The plugin framework that makes this easier
+
