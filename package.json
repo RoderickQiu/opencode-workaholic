@@ -1,0 +1,50 @@
+{
+  "name": "opencode-workaholic",
+  "version": "0.1.0",
+  "description": "Your OpenCode becomes a workaholic. Prevents AI from ending tasks prematurely.",
+  "author": {
+    "name": "Roderick Qiu",
+    "email": "scrisqiu@hotmail.com",
+    "url": "https://r-q.name"
+  },
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/RoderickQiu/opencode-workaholic"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "files": [
+    "dist",
+    "scripts"
+  ],
+  "scripts": {
+    "build": "bun build ./src/index.ts --outdir dist --target bun && cp -r src/command dist/ && cp -r scripts dist/"
+  },
+  "dependencies": {
+    "@opencode-ai/plugin": "1.0.85",
+    "zod": "^3.24.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.1",
+    "@types/node": "^20.11.5",
+    "@typescript-eslint/eslint-plugin": "8.47.0",
+    "@typescript-eslint/parser": "8.47.0",
+    "bun-types": "latest",
+    "eslint": "^9.39.1",
+    "eslint-config-prettier": "10.1.8",
+    "eslint-plugin-prettier": "^5.1.3",
+    "prettier": "^3.2.4",
+    "typescript-eslint": "^8.47.0",
+    "vitest": "^3.2.4"
+  }
+}
