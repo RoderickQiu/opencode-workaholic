@@ -11,6 +11,9 @@
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "bin": {
+    "opencode-workaholic": "./dist/cli.js"
+  },
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -35,7 +38,7 @@
     "scripts"
   ],
   "scripts": {
-    "build": "bun build ./src/index.ts --outdir dist --target bun && cp -r src/command dist/ && cp -r scripts dist/"
+    "build": "bun build ./src/index.ts --outdir dist --target bun && bun build ./src/cli.ts --outdir dist --target bun && cp -r src/command dist/ && cp -r scripts dist/"
   },
   "dependencies": {
     "@opencode-ai/plugin": "1.0.85",
