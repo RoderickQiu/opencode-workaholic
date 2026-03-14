@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.0.0 (2026-03-14)
+
+
+### Features
+
+* create opencode-workaholic plugin ([c2f2116](https://github.com/RoderickQiu/opencode-workaholic/commit/c2f211634f94b3a123f3c7a4dad46fb69d78735a))
+
 ## 0.1.0 (2025-03-14)
 
 ### Features
