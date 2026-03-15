@@ -19,6 +19,8 @@ Sometimes AI finishes tasks too quickly, declaring "done" before thoroughly expl
 - 🔄 **Persistent timer** - Survives across messages
 - 📊 **Status checking** - Always knows remaining time
 - 💪 **Strong behavioral prompts** - Reinforces workaholic mindset
+- 🔐 **Checkout system** - AI must call checkout to officially end (only works at timer = 0)
+- 🎲 **Random prompt rotation** - 6 different prompt styles prevent AI from adapting
 
 ## Usage
 
@@ -40,10 +42,12 @@ Use workaholic.start with minutes=30
 Call workaholic.status to see remaining time
 ```
 
-### Stop Early (if needed)
+### End Task (Checkout)
 
 ```
-Call workaholic.stop to end workaholic mode
+Call workaholic.checkout to officially end the task
+- Only works when timer = 0
+- If time remains, checkout will be rejected
 ```
 
 ## How It Works
@@ -51,7 +55,9 @@ Call workaholic.stop to end workaholic mode
 1. **Timer starts** when you invoke `/workaholic` in OpenCode
 2. **Every response** - AI automatically checks remaining time via system prompt injection
 3. **Sleep forbidden** - Any attempt to use `sleep` throws an error
-4. **Only ends when** - Timer shows 0 remaining seconds
+4. **End detection** - If AI says "done", a warning is appended forcing continuation
+5. **Checkout required** - AI must call `workaholic.checkout` to officially end
+6. **Only ends when** - Timer shows 0 remaining seconds AND checkout is called
 
 ### Custom Tools
 
@@ -60,6 +66,7 @@ Call workaholic.stop to end workaholic mode
 | ------------------- | ------------------------------------------------------------------ |
 | `workaholic.start`  | Start timer with duration in minutes (supports decimals: 2.5, 3.5) |
 | `workaholic.status` | Check remaining time                                               |
+| `workaholic.checkout` | End task - only succeeds when timer = 0                        |
 | `workaholic.stop`   | Stop workaholic mode early                                         |
 
 
