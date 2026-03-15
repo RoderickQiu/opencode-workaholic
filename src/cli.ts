@@ -35,35 +35,13 @@ function addPlugin(pluginName: string) {
     config.plugin = [];
   }
   
-  const existing = config.plugin.includes(pluginName);
-  if (!existing) {
+  if (!config.plugin.includes(pluginName)) {
     config.plugin.push(pluginName);
+    saveConfig(config);
     console.log(`✅ Added "${pluginName}" to plugins`);
   } else {
-    console.log(`ℹ️  "${pluginName}" already in plugins - ensuring latest version`);
+    console.log(`ℹ️  "${pluginName}" is already in plugins`);
   }
-  saveConfig(config);
-  console.log(`\n📌 Next steps:`);
-  console.log(`   1. Restart OpenCode to load latest version`);
-}
-
-function updatePlugin(pluginName: string) {
-  const config = getConfig();
-  
-  if (!config.plugin) {
-    config.plugin = [];
-  }
-  
-  const existing = config.plugin.includes(pluginName);
-  if (!existing) {
-    config.plugin.push(pluginName);
-    console.log(`✅ Added "${pluginName}" to plugins`);
-  } else {
-    console.log(`ℹ️  "${pluginName}" already in plugins - forcing reload`);
-  }
-  saveConfig(config);
-  console.log(`\n📌 Next steps:`);
-  console.log(`   1. Restart OpenCode to load new version`);
 }
 
 function removePlugin(pluginName: string) {
@@ -84,10 +62,10 @@ const command = args[0];
 switch (command) {
   case 'install':
     addPlugin('opencode-workaholic');
-    break;
-    
-  case 'update':
-    updatePlugin('opencode-workaholic');
+    console.log('\n📌 Next steps:');
+    console.log('   1. Restart OpenCode');
+    console.log('   2. Run: opencode -c');
+    console.log('   3. Verify: workaholic.start, workaholic.status, workaholic.stop');
     break;
     
   case 'uninstall':
@@ -101,8 +79,7 @@ opencode-workaholic CLI
 
 Usage:
   opencode-workaholic install    Add plugin to OpenCode config
-  opencode-workaholic update    Update plugin (reload even if already installed)
-  opencode-workaholic uninstall Remove plugin from OpenCode config
+  opencode-workaholic uninstall  Remove plugin from OpenCode config
 
 Or use directly:
   bunx opencode-workaholic@latest install
