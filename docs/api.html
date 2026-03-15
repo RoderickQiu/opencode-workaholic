@@ -1,0 +1,719 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>API Reference — Workaholic</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <meta name="description" content="Complete API documentation for Workaholic plugin." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg-primary: #0a0a0b;
+        --bg-secondary: #111113;
+        --bg-tertiary: #18181b;
+        --text-primary: #fafafa;
+        --text-secondary: #a1a1aa;
+        --text-muted: #71717a;
+        --accent-primary: #f97316;
+        --accent-secondary: #fb923c;
+        --accent-glow: rgba(249, 115, 22, 0.4);
+        --border-color: #27272a;
+        --font-display: 'Space Grotesk', system-ui, sans-serif;
+        --font-mono: 'JetBrains Mono', monospace;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        font-family: var(--font-display);
+        background: var(--bg-primary);
+        color: var(--text-primary);
+        line-height: 1.6;
+        overflow-x: hidden;
+      }
+
+      .bg-gradient {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        overflow: hidden;
+      }
+
+      .bg-gradient::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background:
+          radial-gradient(ellipse 80% 50% at 20% 40%, rgba(249, 115, 22, 0.08) 0%, transparent 50%),
+          radial-gradient(ellipse 60% 40% at 80% 20%, rgba(251, 146, 60, 0.05) 0%, transparent 50%),
+          radial-gradient(ellipse 50% 30% at 60% 80%, rgba(249, 115, 22, 0.03) 0%, transparent 50%);
+        animation: drift 20s ease-in-out infinite;
+      }
+
+      @keyframes drift {
+        0%,
+        100% {
+          transform: translate(0, 0) rotate(0deg);
+        }
+        33% {
+          transform: translate(2%, 2%) rotate(1deg);
+        }
+        66% {
+          transform: translate(-1%, 1%) rotate(-1deg);
+        }
+      }
+
+      .grid-pattern {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        background-image:
+          linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+        background-size: 60px 60px;
+        mask-image: radial-gradient(ellipse 80% 60% at 50% 50%, black 20%, transparent 70%);
+      }
+
+      /* Navigation */
+      nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 100;
+        padding: 1.25rem 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: rgba(10, 10, 11, 0.8);
+        backdrop-filter: blur(20px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-weight: 600;
+        font-size: 1.125rem;
+        letter-spacing: -0.02em;
+        text-decoration: none;
+        color: var(--text-primary);
+      }
+
+      .logo-icon {
+        width: 32px;
+        height: 32px;
+        background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 2rem;
+        list-style: none;
+      }
+
+      .nav-links a {
+        color: var(--text-secondary);
+        text-decoration: none;
+        font-size: 0.9rem;
+        font-weight: 400;
+        transition: color 0.2s ease;
+      }
+
+      .nav-links a:hover,
+      .nav-links a.active {
+        color: var(--text-primary);
+      }
+
+      /* Main Content */
+      .container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 8rem 2rem 4rem;
+      }
+
+      .page-header {
+        margin-bottom: 4rem;
+      }
+
+      .page-header h1 {
+        font-size: clamp(2.5rem, 5vw, 3.5rem);
+        font-weight: 700;
+        letter-spacing: -0.04em;
+        margin-bottom: 1rem;
+      }
+
+      .page-header h1 .gradient-text {
+        background: linear-gradient(
+          135deg,
+          var(--accent-primary) 0%,
+          var(--accent-secondary) 50%,
+          #fcd34d 100%
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .page-header p {
+        font-size: 1.25rem;
+        color: var(--text-secondary);
+        max-width: 600px;
+      }
+
+      /* API Sections */
+      .api-section {
+        margin-bottom: 4rem;
+      }
+
+      .api-section h2 {
+        font-size: 1.75rem;
+        font-weight: 600;
+        letter-spacing: -0.03em;
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 1px solid var(--border-color);
+      }
+
+      /* Tool Cards */
+      .tool-card {
+        background: var(--bg-secondary);
+        border: 1px solid var(--border-color);
+        border-radius: 16px;
+        padding: 2rem;
+        margin-bottom: 1.5rem;
+        transition: all 0.3s ease;
+      }
+
+      .tool-card:hover {
+        border-color: rgba(249, 115, 22, 0.3);
+      }
+
+      .tool-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1rem;
+      }
+
+      .tool-name {
+        font-family: var(--font-mono);
+        font-size: 1.25rem;
+        font-weight: 500;
+        color: var(--accent-primary);
+      }
+
+      .tool-badge {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        background: rgba(249, 115, 22, 0.1);
+        border: 1px solid rgba(249, 115, 22, 0.2);
+        border-radius: 100px;
+        font-size: 0.75rem;
+        font-weight: 500;
+        color: var(--accent-primary);
+      }
+
+      .tool-badge.tool {
+        background: rgba(34, 197, 94, 0.1);
+        border-color: rgba(34, 197, 94, 0.2);
+        color: #22c55e;
+      }
+
+      .tool-description {
+        color: var(--text-secondary);
+        margin-bottom: 1.5rem;
+      }
+
+      /* Code Block */
+      .code-block {
+        background: var(--bg-primary);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        overflow: hidden;
+      }
+
+      .code-header {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1rem;
+        background: var(--bg-tertiary);
+        border-bottom: 1px solid var(--border-color);
+      }
+
+      .code-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+      }
+
+      .code-dot.red {
+        background: #ff5f56;
+      }
+      .code-dot.yellow {
+        background: #ffbd2e;
+      }
+      .code-dot.green {
+        background: #27c93f;
+      }
+
+      .code-content {
+        padding: 1.25rem;
+        overflow-x: auto;
+      }
+
+      .code-content pre {
+        font-family: var(--font-mono);
+        font-size: 0.875rem;
+        line-height: 1.7;
+        color: var(--text-secondary);
+        white-space: pre-wrap;
+      }
+
+      /* Parameters */
+      .params-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 1rem;
+      }
+
+      .params-table th,
+      .params-table td {
+        padding: 0.875rem 1rem;
+        text-align: left;
+        border-bottom: 1px solid var(--border-color);
+      }
+
+      .params-table th {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      .params-table td {
+        font-size: 0.9375rem;
+      }
+
+      .param-name {
+        font-family: var(--font-mono);
+        color: var(--accent-primary);
+        font-weight: 500;
+      }
+
+      .param-type {
+        font-family: var(--font-mono);
+        font-size: 0.8rem;
+        color: #c792ea;
+      }
+
+      .param-required {
+        display: inline-block;
+        padding: 0.125rem 0.5rem;
+        background: rgba(239, 68, 68, 0.1);
+        border-radius: 4px;
+        font-size: 0.7rem;
+        color: #ef4444;
+        margin-left: 0.5rem;
+      }
+
+      /* Return Value */
+      .return-value {
+        margin-top: 1.5rem;
+        padding: 1rem;
+        background: var(--bg-tertiary);
+        border-radius: 8px;
+      }
+
+      .return-label {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 0.5rem;
+      }
+
+      .return-type {
+        font-family: var(--font-mono);
+        color: #82aaff;
+      }
+
+      /* Example */
+      .example {
+        margin-top: 1.5rem;
+        padding: 1rem;
+        background: var(--bg-tertiary);
+        border-radius: 8px;
+      }
+
+      .example-label {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 0.75rem;
+      }
+
+      /* Footer */
+      footer {
+        padding: 4rem 2rem;
+        border-top: 1px solid var(--border-color);
+        text-align: center;
+      }
+
+      .footer-content {
+        max-width: 600px;
+        margin: 0 auto;
+      }
+
+      .footer-links {
+        display: flex;
+        justify-content: center;
+        gap: 2rem;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+      }
+
+      .footer-links a {
+        color: var(--text-secondary);
+        text-decoration: none;
+        font-size: 0.9rem;
+        transition: color 0.2s ease;
+      }
+
+      .footer-links a:hover {
+        color: var(--accent-primary);
+      }
+
+      .footer-copy {
+        color: var(--text-muted);
+        font-size: 0.85rem;
+      }
+
+      /* Responsive */
+      @media (max-width: 768px) {
+        nav {
+          padding: 1rem;
+        }
+
+        .nav-links {
+          display: none;
+        }
+
+        .container {
+          padding: 6rem 1.5rem 3rem;
+        }
+
+        .tool-card {
+          padding: 1.5rem;
+        }
+
+        .params-table {
+          display: block;
+          overflow-x: auto;
+        }
+
+        .params-table tbody,
+        .params-table tr,
+        .params-table th,
+        .params-table td {
+          display: block;
+          width: 100%;
+        }
+
+        .params-table th {
+          display: none;
+        }
+
+        .params-table td {
+          padding: 0.5rem 0;
+          border-bottom: none;
+        }
+
+        .params-table td:first-child {
+          font-weight: 600;
+          margin-top: 0.5rem;
+        }
+
+        .params-table td:last-child {
+          padding-bottom: 1rem;
+        }
+
+        .example {
+          overflow-x: auto;
+        }
+
+        .example pre {
+          white-space: pre-wrap;
+          word-break: break-all;
+        }
+
+        .code-content pre {
+          white-space: pre-wrap;
+          word-break: break-all;
+        }
+      }
+
+      .reveal {
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all 0.5s ease;
+      }
+
+      .reveal.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="bg-gradient"></div>
+    <div class="grid-pattern"></div>
+
+    <nav>
+      <a href="/" class="logo">
+        <div class="logo-icon">⏱</div>
+        <span>Workaholic</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="/">Home</a></li>
+        <li><a href="/#features">Features</a></li>
+        <li><a href="/#usage">Usage</a></li>
+        <li><a href="/api.html" class="active">API</a></li>
+        <li><a href="/install.html">Install</a></li>
+        <li>
+          <a
+            href="https://github.com/RoderickQiu/opencode-workaholic"
+            target="_blank"
+            rel="noopener"
+            >GitHub</a
+          >
+        </li>
+      </ul>
+    </nav>
+
+    <div class="container">
+      <div class="page-header reveal">
+        <h1>API <span class="gradient-text">Reference</span></h1>
+        <p>Complete documentation for the Workaholic plugin tools and commands.</p>
+      </div>
+
+      <section class="api-section reveal">
+        <h2>Commands</h2>
+
+        <!-- /workaholic -->
+        <div class="tool-card">
+          <div class="tool-header">
+            <span class="tool-name">/workaholic</span>
+            <span class="tool-badge">Command</span>
+          </div>
+          <p class="tool-description">
+            Slash command to start workaholic mode. Provide your requirements and desired duration
+            in natural language.
+          </p>
+
+          <div class="example">
+            <div class="example-label">Examples</div>
+            <pre><code>/workaholic Fix all bugs in the codebase, for 30 minutes
+/workaholic Research this topic for 1 hour
+/workaholic Implement this feature, for 45 minutes</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section class="api-section reveal">
+        <h2>Tools</h2>
+
+        <!-- workaholic.start -->
+        <div class="tool-card">
+          <div class="tool-header">
+            <span class="tool-name">workaholic.start</span>
+            <span class="tool-badge tool">Tool</span>
+          </div>
+          <p class="tool-description">
+            Start the workaholic timer with a specified duration. This tool enforces a minimum work
+            duration, preventing the AI from ending tasks prematurely.
+          </p>
+
+          <table class="params-table">
+            <thead>
+              <tr>
+                <th>Parameter</th>
+                <th>Type</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <span class="param-name">minutes</span
+                  ><span class="param-required">Required</span>
+                </td>
+                <td><span class="param-type">number</span></td>
+                <td>
+                  Duration in minutes. Supports decimal numbers (e.g., 2.5, 3.5) for flexible
+                  timing.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="return-value">
+            <div class="return-label">Returns</div>
+            <span class="return-type">void</span>
+          </div>
+
+          <div class="example">
+            <div class="example-label">Example</div>
+            <pre><code>Use workaholic.start with minutes=30</code></pre>
+          </div>
+        </div>
+
+        <!-- workaholic.status -->
+        <div class="tool-card">
+          <div class="tool-header">
+            <span class="tool-name">workaholic.status</span>
+            <span class="tool-badge tool">Tool</span>
+          </div>
+          <p class="tool-description">
+            Check the remaining time in workaholic mode. Returns the current timer status including
+            remaining seconds.
+          </p>
+
+          <div class="return-value">
+            <div class="return-label">Returns</div>
+            <span class="return-type">object</span> - Contains remaining time and status information
+          </div>
+
+          <div class="example">
+            <div class="example-label">Example</div>
+            <pre><code>Call workaholic.status to see remaining time</code></pre>
+          </div>
+        </div>
+
+        <!-- workaholic.stop -->
+        <div class="tool-card">
+          <div class="tool-header">
+            <span class="tool-name">workaholic.stop</span>
+            <span class="tool-badge tool">Tool</span>
+          </div>
+          <p class="tool-description">
+            Stop workaholic mode early. Use this when you need to end the enforced work duration
+            before the timer expires.
+          </p>
+
+          <div class="return-value">
+            <div class="return-label">Returns</div>
+            <span class="return-type">void</span>
+          </div>
+
+          <div class="example">
+            <div class="example-label">Example</div>
+            <pre><code>Call workaholic.stop to end workaholic mode</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section class="api-section reveal">
+        <h2>Behavior</h2>
+
+        <div class="tool-card">
+          <p class="tool-description">
+            Once workaholic mode is activated, the following behaviors are enforced:
+          </p>
+          <ul style="color: var(--text-secondary); margin-top: 1rem; padding-left: 1.5rem">
+            <li style="margin-bottom: 0.5rem">
+              <strong style="color: var(--text-primary)">Timer Enforcement:</strong> The AI cannot
+              end the session until the timer expires
+            </li>
+            <li style="margin-bottom: 0.5rem">
+              <strong style="color: var(--text-primary)">Sleep Blocking:</strong> Any attempt to use
+              sleep commands will fail
+            </li>
+            <li style="margin-bottom: 0.5rem">
+              <strong style="color: var(--text-primary)">Persistent State:</strong> Timer survives
+              across messages in the conversation
+            </li>
+            <li style="margin-bottom: 0.5rem">
+              <strong style="color: var(--text-primary)">Automatic Status:</strong> Every response
+              automatically checks remaining time
+            </li>
+            <li>
+              <strong style="color: var(--text-primary)">Task Proposals:</strong> When todos
+              complete, AI is encouraged to propose more work
+            </li>
+          </ul>
+        </div>
+      </section>
+    </div>
+
+    <footer>
+      <div class="footer-content">
+        <div class="footer-links">
+          <a href="/">Home</a>
+          <a href="/api.html">API</a>
+          <a href="/install.html">Install</a>
+          <a
+            href="https://github.com/RoderickQiu/opencode-workaholic"
+            target="_blank"
+            rel="noopener"
+            >GitHub</a
+          >
+        </div>
+        <p class="footer-copy">© 2026 Roderick Qiu. MIT License.</p>
+      </div>
+    </footer>
+
+    <script>
+      // Scroll reveal animation
+      const revealElements = document.querySelectorAll('.reveal');
+
+      function checkReveal() {
+        const windowHeight = window.innerHeight;
+        revealElements.forEach((el) => {
+          const elementTop = el.getBoundingClientRect().top;
+          const revealPoint = 150;
+          if (elementTop < windowHeight - revealPoint) {
+            el.classList.add('visible');
+          }
+        });
+      }
+
+      window.addEventListener('scroll', checkReveal);
+      checkReveal();
+    </script>
+  </body>
+</html>

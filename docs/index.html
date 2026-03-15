@@ -1,0 +1,739 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Workaholic — Never Stop Until Time Expires</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <meta
+      name="description"
+      content="OpenCode plugin that enforces minimum task duration. Prevents AI from ending tasks prematurely."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg-primary: #0a0a0b;
+        --bg-secondary: #111113;
+        --bg-tertiary: #18181b;
+        --text-primary: #fafafa;
+        --text-secondary: #a1a1aa;
+        --text-muted: #71717a;
+        --accent-primary: #f97316;
+        --accent-secondary: #fb923c;
+        --accent-glow: rgba(249, 115, 22, 0.4);
+        --border-color: #27272a;
+        --font-display: 'Space Grotesk', system-ui, sans-serif;
+        --font-mono: 'JetBrains Mono', monospace;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        font-family: var(--font-display);
+        background: var(--bg-primary);
+        color: var(--text-primary);
+        line-height: 1.6;
+        overflow-x: hidden;
+      }
+
+      /* Animated Background */
+      .bg-gradient {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        overflow: hidden;
+      }
+
+      .bg-gradient::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background:
+          radial-gradient(ellipse 80% 50% at 20% 40%, rgba(249, 115, 22, 0.08) 0%, transparent 50%),
+          radial-gradient(ellipse 60% 40% at 80% 20%, rgba(251, 146, 60, 0.05) 0%, transparent 50%),
+          radial-gradient(ellipse 50% 30% at 60% 80%, rgba(249, 115, 22, 0.03) 0%, transparent 50%);
+        animation: drift 20s ease-in-out infinite;
+      }
+
+      @keyframes drift {
+        0%,
+        100% {
+          transform: translate(0, 0) rotate(0deg);
+        }
+        33% {
+          transform: translate(2%, 2%) rotate(1deg);
+        }
+        66% {
+          transform: translate(-1%, 1%) rotate(-1deg);
+        }
+      }
+
+      /* Grid Pattern */
+      .grid-pattern {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        background-image:
+          linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+        background-size: 60px 60px;
+        mask-image: radial-gradient(ellipse 80% 60% at 50% 50%, black 20%, transparent 70%);
+      }
+
+      /* Navigation */
+      nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 100;
+        padding: 1.25rem 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: rgba(10, 10, 11, 0.8);
+        backdrop-filter: blur(20px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-weight: 600;
+        font-size: 1.125rem;
+        letter-spacing: -0.02em;
+      }
+
+      .logo-icon {
+        width: 32px;
+        height: 32px;
+        background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 2rem;
+        list-style: none;
+      }
+
+      .nav-links a {
+        color: var(--text-secondary);
+        text-decoration: none;
+        font-size: 0.9rem;
+        font-weight: 400;
+        transition: color 0.2s ease;
+      }
+
+      .nav-links a:hover {
+        color: var(--text-primary);
+      }
+
+      /* Hero Section */
+      .hero {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        padding: 8rem 2rem 4rem;
+        position: relative;
+      }
+
+      .hero-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        background: rgba(249, 115, 22, 0.1);
+        border: 1px solid rgba(249, 115, 22, 0.2);
+        border-radius: 100px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        color: var(--accent-primary);
+        margin-bottom: 2rem;
+        animation: fadeInUp 0.8s ease forwards;
+        opacity: 0;
+      }
+
+      .hero-badge::before {
+        content: '';
+        width: 6px;
+        height: 6px;
+        background: var(--accent-primary);
+        border-radius: 50%;
+        animation: pulse 2s ease-in-out infinite;
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+          transform: scale(1);
+        }
+        50% {
+          opacity: 0.5;
+          transform: scale(1.2);
+        }
+      }
+
+      .hero h1 {
+        font-size: clamp(3rem, 8vw, 5.5rem);
+        font-weight: 700;
+        letter-spacing: -0.04em;
+        line-height: 1.1;
+        margin-bottom: 1.5rem;
+        animation: fadeInUp 0.8s ease 0.1s forwards;
+        opacity: 0;
+      }
+
+      .hero h1 .gradient-text {
+        background: linear-gradient(
+          135deg,
+          var(--accent-primary) 0%,
+          var(--accent-secondary) 50%,
+          #fcd34d 100%
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .hero p {
+        font-size: clamp(1.125rem, 2vw, 1.375rem);
+        color: var(--text-secondary);
+        max-width: 540px;
+        margin-bottom: 2.5rem;
+        animation: fadeInUp 0.8s ease 0.2s forwards;
+        opacity: 0;
+      }
+
+      .hero-cta {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+        justify-content: center;
+        animation: fadeInUp 0.8s ease 0.3s forwards;
+        opacity: 0;
+      }
+
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.875rem 1.75rem;
+        border-radius: 10px;
+        font-size: 0.95rem;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.25s ease;
+        cursor: pointer;
+        border: none;
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+        color: white;
+        box-shadow: 0 4px 20px var(--accent-glow);
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 30px var(--accent-glow);
+      }
+
+      .btn-secondary {
+        background: var(--bg-tertiary);
+        color: var(--text-primary);
+        border: 1px solid var(--border-color);
+      }
+
+      .btn-secondary:hover {
+        background: var(--bg-secondary);
+        border-color: var(--text-muted);
+      }
+
+      /* Timer Display */
+      .timer-display {
+        margin-top: 4rem;
+        padding: 2rem;
+        background: var(--bg-secondary);
+        border: 1px solid var(--border-color);
+        border-radius: 16px;
+        animation: fadeInUp 0.8s ease 0.4s forwards;
+        opacity: 0;
+      }
+
+      .timer-display code {
+        font-family: var(--font-mono);
+        font-size: 3rem;
+        font-weight: 500;
+        color: var(--accent-primary);
+        letter-spacing: 0.05em;
+      }
+
+      /* Features Section */
+      .features {
+        padding: 6rem 2rem;
+        max-width: 1100px;
+        margin: 0 auto;
+      }
+
+      .section-header {
+        text-align: center;
+        margin-bottom: 4rem;
+      }
+
+      .section-header h2 {
+        font-size: clamp(2rem, 4vw, 2.75rem);
+        font-weight: 600;
+        letter-spacing: -0.03em;
+        margin-bottom: 1rem;
+      }
+
+      .section-header p {
+        color: var(--text-secondary);
+        font-size: 1.125rem;
+        max-width: 500px;
+        margin: 0 auto;
+      }
+
+      .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+      }
+
+      .feature-card {
+        background: var(--bg-secondary);
+        border: 1px solid var(--border-color);
+        border-radius: 16px;
+        padding: 2rem;
+        transition: all 0.3s ease;
+      }
+
+      .feature-card:hover {
+        border-color: rgba(249, 115, 22, 0.3);
+        transform: translateY(-4px);
+      }
+
+      .feature-icon {
+        width: 48px;
+        height: 48px;
+        background: rgba(249, 115, 22, 0.1);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        margin-bottom: 1.25rem;
+      }
+
+      .feature-card h3 {
+        font-size: 1.125rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        letter-spacing: -0.02em;
+      }
+
+      .feature-card p {
+        color: var(--text-secondary);
+        font-size: 0.9375rem;
+        line-height: 1.6;
+      }
+
+      /* Usage Section */
+      .usage {
+        padding: 6rem 2rem;
+        max-width: 900px;
+        margin: 0 auto;
+      }
+
+      .usage-steps {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+      }
+
+      .usage-step {
+        display: flex;
+        gap: 1.5rem;
+        align-items: flex-start;
+      }
+
+      .step-number {
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        font-size: 1rem;
+        flex-shrink: 0;
+      }
+
+      .step-content h3 {
+        font-size: 1.125rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        letter-spacing: -0.02em;
+      }
+
+      .step-content p {
+        color: var(--text-secondary);
+        font-size: 0.9375rem;
+      }
+
+      .step-content code {
+        display: inline-block;
+        margin-top: 0.75rem;
+        padding: 0.75rem 1rem;
+        background: var(--bg-secondary);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        font-family: var(--font-mono);
+        font-size: 0.85rem;
+        color: var(--accent-primary);
+      }
+
+      /* Footer */
+      footer {
+        padding: 4rem 2rem;
+        border-top: 1px solid var(--border-color);
+        text-align: center;
+      }
+
+      .footer-content {
+        max-width: 600px;
+        margin: 0 auto;
+      }
+
+      .footer-logo {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: 600;
+        font-size: 1rem;
+        margin-bottom: 1rem;
+      }
+
+      .footer-links {
+        display: flex;
+        justify-content: center;
+        gap: 2rem;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+      }
+
+      .footer-links a {
+        color: var(--text-secondary);
+        text-decoration: none;
+        font-size: 0.9rem;
+        transition: color 0.2s ease;
+      }
+
+      .footer-links a:hover {
+        color: var(--accent-primary);
+      }
+
+      .footer-copy {
+        color: var(--text-muted);
+        font-size: 0.85rem;
+      }
+
+      /* Responsive */
+      @media (max-width: 768px) {
+        nav {
+          padding: 1rem;
+        }
+
+        .nav-links {
+          display: none;
+        }
+
+        .hero {
+          padding: 6rem 1.5rem 3rem;
+        }
+
+        .hero h1 {
+          font-size: 2.5rem;
+        }
+
+        .features,
+        .usage {
+          padding: 4rem 1.5rem;
+        }
+
+        .usage-step {
+          flex-direction: column;
+          gap: 1rem;
+        }
+
+        .timer-display code {
+          font-size: 2rem;
+        }
+      }
+
+      /* Scroll animations */
+      .reveal {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: all 0.6s ease;
+      }
+
+      .reveal.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="bg-gradient"></div>
+    <div class="grid-pattern"></div>
+
+    <nav>
+      <div class="logo">
+        <div class="logo-icon">⏱</div>
+        <span>Workaholic</span>
+      </div>
+      <ul class="nav-links">
+        <li><a href="/">Home</a></li>
+        <li><a href="#features">Features</a></li>
+        <li><a href="#usage">Usage</a></li>
+        <li><a href="/api.html">API</a></li>
+        <li><a href="/install.html">Install</a></li>
+        <li>
+          <a
+            href="https://github.com/RoderickQiu/opencode-workaholic"
+            target="_blank"
+            rel="noopener"
+            >GitHub</a
+          >
+        </li>
+      </ul>
+    </nav>
+
+    <section class="hero">
+      <div class="hero-badge">OpenCode Plugin</div>
+      <h1>
+        Never Stop<br />
+        <span class="gradient-text">Until Time Expires</span>
+      </h1>
+      <p>
+        Enforces minimum task duration. Prevents AI from ending tasks prematurely before a time
+        limit expires. Stay focused. Keep working.
+      </p>
+      <div class="hero-cta">
+        <a
+          href="https://github.com/RoderickQiu/opencode-workaholic"
+          class="btn btn-primary"
+          target="_blank"
+          rel="noopener"
+        >
+          <span>↗</span> View on GitHub
+        </a>
+        <a href="#usage" class="btn btn-secondary">Get Started</a>
+      </div>
+      <div class="timer-display">
+        <code id="demo-timer">15:00</code>
+      </div>
+    </section>
+
+    <section class="features" id="features">
+      <div class="section-header reveal">
+        <h2>Built for Deep Work</h2>
+        <p>Powerful features that keep you focused and prevent premature task completion.</p>
+      </div>
+      <div class="features-grid">
+        <div class="feature-card reveal">
+          <div class="feature-icon">⏱</div>
+          <h3>Timer Enforcement</h3>
+          <p>AI cannot end until the timer expires. Minimum duration guaranteed.</p>
+        </div>
+        <div class="feature-card reveal">
+          <div class="feature-icon">🚫</div>
+          <h3>Sleep Blocking</h3>
+          <p>Prevents time-wasting via sleep commands. No more waiting.</p>
+        </div>
+        <div class="feature-card reveal">
+          <div class="feature-icon">🔄</div>
+          <h3>Persistent Timer</h3>
+          <p>Timer survives across messages. Context is always maintained.</p>
+        </div>
+        <div class="feature-card reveal">
+          <div class="feature-icon">📊</div>
+          <h3>Status Checking</h3>
+          <p>Always knows remaining time. Real-time timer status available.</p>
+        </div>
+        <div class="feature-card reveal">
+          <div class="feature-icon">💪</div>
+          <h3>Behavioral Prompts</h3>
+          <p>Strong prompts reinforce the workaholic mindset automatically.</p>
+        </div>
+        <div class="feature-card reveal">
+          <div class="feature-icon">✨</div>
+          <h3>Task Proposals</h3>
+          <p>Encourages AI to propose new tasks when todos are complete.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="usage" id="usage">
+      <div class="section-header reveal">
+        <h2>How It Works</h2>
+        <p>Three simple steps to enforced productivity.</p>
+      </div>
+      <div class="usage-steps">
+        <div class="usage-step reveal">
+          <div class="step-number">1</div>
+          <div class="step-content">
+            <h3>Start the Timer</h3>
+            <p>
+              Invoke /workaholic in OpenCode or use the tool directly with your desired duration.
+            </p>
+            <code>/workaholic [Your requirements, for xxx minutes]</code>
+          </div>
+        </div>
+        <div class="usage-step reveal">
+          <div class="step-number">2</div>
+          <div class="step-content">
+            <h3>Work Continuously</h3>
+            <p>Every response automatically checks remaining time. Sleep commands are blocked.</p>
+            <code>AI cannot end until timer shows 0</code>
+          </div>
+        </div>
+        <div class="usage-step reveal">
+          <div class="step-number">3</div>
+          <div class="step-content">
+            <h3>Complete or Propose More</h3>
+            <p>
+              When time expires, either finish up or propose additional tasks to continue working.
+            </p>
+            <code>Time's up only when remaining = 0</code>
+          </div>
+        </div>
+      </div>
+      <div style="text-align: center; margin-top: 2.5rem" class="reveal">
+        <a href="/install.html" class="btn btn-primary">Get Started →</a>
+      </div>
+    </section>
+
+    <footer>
+      <div class="footer-content">
+        <div class="footer-logo">
+          <div class="logo-icon" style="width: 24px; height: 24px; font-size: 0.75rem">⏱</div>
+          <span>Workaholic</span>
+        </div>
+        <div class="footer-links">
+          <a href="/api.html">API</a>
+          <a href="/install.html">Install</a>
+          <a
+            href="https://github.com/RoderickQiu/opencode-workaholic"
+            target="_blank"
+            rel="noopener"
+            >GitHub</a
+          >
+          <a href="https://opencode.ai" target="_blank" rel="noopener">OpenCode</a>
+          <a href="https://r-q.name" target="_blank" rel="noopener">Author</a>
+        </div>
+        <p class="footer-copy">© 2026 Roderick Qiu. MIT License.</p>
+      </div>
+    </footer>
+
+    <script>
+      // Demo timer animation
+      let timeLeft = 15 * 60;
+      const timerDisplay = document.getElementById('demo-timer');
+
+      function updateTimer() {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+        // Subtle color shift as time passes
+        const progress = 1 - timeLeft / (15 * 60);
+        const hue = 30 - progress * 20; // Orange to red-orange
+        timerDisplay.style.color = `hsl(${hue}, 100%, 55%)`;
+
+        if (timeLeft > 0) {
+          timeLeft--;
+        }
+      }
+
+      updateTimer();
+      setInterval(updateTimer, 1000);
+
+      // Scroll reveal animation
+      const revealElements = document.querySelectorAll('.reveal');
+
+      function checkReveal() {
+        const windowHeight = window.innerHeight;
+        revealElements.forEach((el) => {
+          const elementTop = el.getBoundingClientRect().top;
+          const revealPoint = 150;
+          if (elementTop < windowHeight - revealPoint) {
+            el.classList.add('visible');
+          }
+        });
+      }
+
+      window.addEventListener('scroll', checkReveal);
+      checkReveal();
+
+      // Smooth scroll for anchor links
+      document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+        anchor.addEventListener('click', function (e) {
+          e.preventDefault();
+          const target = document.querySelector(this.getAttribute('href'));
+          if (target) {
+            target.scrollIntoView({
+              behavior: 'smooth',
+              block: 'start',
+            });
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

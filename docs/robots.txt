@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://roderickqiu.github.io/opencode-workaholic/sitemap.xml

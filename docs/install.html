@@ -1,0 +1,630 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Installation — Workaholic</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <meta name="description" content="How to install and configure Workaholic plugin." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg-primary: #0a0a0b;
+        --bg-secondary: #111113;
+        --bg-tertiary: #18181b;
+        --text-primary: #fafafa;
+        --text-secondary: #a1a1aa;
+        --text-muted: #71717a;
+        --accent-primary: #f97316;
+        --accent-secondary: #fb923c;
+        --accent-glow: rgba(249, 115, 22, 0.4);
+        --border-color: #27272a;
+        --font-display: 'Space Grotesk', system-ui, sans-serif;
+        --font-mono: 'JetBrains Mono', monospace;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        font-family: var(--font-display);
+        background: var(--bg-primary);
+        color: var(--text-primary);
+        line-height: 1.6;
+        overflow-x: hidden;
+      }
+
+      .bg-gradient {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        overflow: hidden;
+      }
+
+      .bg-gradient::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background:
+          radial-gradient(ellipse 80% 50% at 20% 40%, rgba(249, 115, 22, 0.08) 0%, transparent 50%),
+          radial-gradient(ellipse 60% 40% at 80% 20%, rgba(251, 146, 60, 0.05) 0%, transparent 50%),
+          radial-gradient(ellipse 50% 30% at 60% 80%, rgba(249, 115, 22, 0.03) 0%, transparent 50%);
+        animation: drift 20s ease-in-out infinite;
+      }
+
+      @keyframes drift {
+        0%,
+        100% {
+          transform: translate(0, 0) rotate(0deg);
+        }
+        33% {
+          transform: translate(2%, 2%) rotate(1deg);
+        }
+        66% {
+          transform: translate(-1%, 1%) rotate(-1deg);
+        }
+      }
+
+      .grid-pattern {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        background-image:
+          linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+        background-size: 60px 60px;
+        mask-image: radial-gradient(ellipse 80% 60% at 50% 50%, black 20%, transparent 70%);
+      }
+
+      nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 100;
+        padding: 1.25rem 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: rgba(10, 10, 11, 0.8);
+        backdrop-filter: blur(20px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-weight: 600;
+        font-size: 1.125rem;
+        letter-spacing: -0.02em;
+        text-decoration: none;
+        color: var(--text-primary);
+      }
+
+      .logo-icon {
+        width: 32px;
+        height: 32px;
+        background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 2rem;
+        list-style: none;
+      }
+
+      .nav-links a {
+        color: var(--text-secondary);
+        text-decoration: none;
+        font-size: 0.9rem;
+        font-weight: 400;
+        transition: color 0.2s ease;
+      }
+
+      .nav-links a:hover,
+      .nav-links a.active {
+        color: var(--text-primary);
+      }
+
+      .container {
+        max-width: 850px;
+        margin: 0 auto;
+        padding: 8rem 2rem 4rem;
+      }
+
+      .page-header {
+        margin-bottom: 4rem;
+      }
+
+      .page-header h1 {
+        font-size: clamp(2.5rem, 5vw, 3.5rem);
+        font-weight: 700;
+        letter-spacing: -0.04em;
+        margin-bottom: 1rem;
+      }
+
+      .page-header h1 .gradient-text {
+        background: linear-gradient(
+          135deg,
+          var(--accent-primary) 0%,
+          var(--accent-secondary) 50%,
+          #fcd34d 100%
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .page-header p {
+        font-size: 1.25rem;
+        color: var(--text-secondary);
+      }
+
+      .install-section {
+        margin-bottom: 3rem;
+      }
+
+      .install-section h2 {
+        font-size: 1.75rem;
+        font-weight: 600;
+        letter-spacing: -0.03em;
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 1px solid var(--border-color);
+      }
+
+      .install-step {
+        display: flex;
+        gap: 1.5rem;
+        align-items: flex-start;
+        margin-bottom: 2rem;
+      }
+
+      .step-number {
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        font-size: 1rem;
+        flex-shrink: 0;
+      }
+
+      .step-content h3 {
+        font-size: 1.125rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        letter-spacing: -0.02em;
+      }
+
+      .step-content p {
+        color: var(--text-secondary);
+        font-size: 0.9375rem;
+        margin-bottom: 1rem;
+      }
+
+      .code-block {
+        background: var(--bg-secondary);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        overflow: hidden;
+      }
+
+      .code-header {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1rem;
+        background: var(--bg-tertiary);
+        border-bottom: 1px solid var(--border-color);
+      }
+
+      .code-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+      }
+
+      .code-dot.red {
+        background: #ff5f56;
+      }
+      .code-dot.yellow {
+        background: #ffbd2e;
+      }
+      .code-dot.green {
+        background: #27c93f;
+      }
+
+      .code-title {
+        margin-left: auto;
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        font-family: var(--font-mono);
+      }
+
+      .code-content {
+        padding: 1.25rem;
+        overflow-x: auto;
+      }
+
+      .code-content pre {
+        font-family: var(--font-mono);
+        font-size: 0.875rem;
+        line-height: 1.7;
+        color: var(--text-secondary);
+        white-space: pre-wrap;
+      }
+
+      .code-content code {
+        color: var(--accent-primary);
+      }
+
+      .note {
+        display: flex;
+        gap: 0.75rem;
+        padding: 1rem;
+        background: rgba(59, 130, 246, 0.1);
+        border: 1px solid rgba(59, 130, 246, 0.2);
+        border-radius: 8px;
+        margin: 1.5rem 0;
+      }
+
+      .note-icon {
+        font-size: 1.25rem;
+      }
+
+      .note p {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+      }
+
+      .warning {
+        background: rgba(249, 115, 22, 0.1);
+        border-color: rgba(249, 115, 22, 0.2);
+      }
+
+      .warning .note-icon {
+        color: var(--accent-primary);
+      }
+
+      footer {
+        padding: 4rem 2rem;
+        border-top: 1px solid var(--border-color);
+        text-align: center;
+      }
+
+      .footer-content {
+        max-width: 600px;
+        margin: 0 auto;
+      }
+
+      .footer-links {
+        display: flex;
+        justify-content: center;
+        gap: 2rem;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+      }
+
+      .footer-links a {
+        color: var(--text-secondary);
+        text-decoration: none;
+        font-size: 0.9rem;
+        transition: color 0.2s ease;
+      }
+
+      .footer-links a:hover {
+        color: var(--accent-primary);
+      }
+
+      .footer-copy {
+        color: var(--text-muted);
+        font-size: 0.85rem;
+      }
+
+      @media (max-width: 768px) {
+        nav {
+          padding: 1rem;
+        }
+
+        .nav-links {
+          display: none;
+        }
+
+        .container {
+          padding: 6rem 1.5rem 3rem;
+        }
+
+        .install-step {
+          flex-direction: column;
+          gap: 1rem;
+        }
+      }
+
+      .reveal {
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all 0.5s ease;
+      }
+
+      .reveal.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="bg-gradient"></div>
+    <div class="grid-pattern"></div>
+
+    <nav>
+      <a href="/" class="logo">
+        <div class="logo-icon">⏱</div>
+        <span>Workaholic</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="/">Home</a></li>
+        <li><a href="/#features">Features</a></li>
+        <li><a href="/#usage">Usage</a></li>
+        <li><a href="/api.html">API</a></li>
+        <li><a href="/install.html" class="active">Install</a></li>
+        <li>
+          <a
+            href="https://github.com/RoderickQiu/opencode-workaholic"
+            target="_blank"
+            rel="noopener"
+            >GitHub</a
+          >
+        </li>
+      </ul>
+    </nav>
+
+    <div class="container">
+      <div class="page-header reveal">
+        <h1>Install<span class="gradient-text">ation</span></h1>
+        <p>Get started with Workaholic in your OpenCode setup.</p>
+      </div>
+
+      <section class="install-section reveal">
+        <h2>Prerequisites</h2>
+        <div class="note">
+          <span class="note-icon">ℹ️</span>
+          <p>
+            Workaholic requires <strong>OpenCode</strong> with plugin support. Make sure you have
+            OpenCode installed before proceeding.
+          </p>
+        </div>
+      </section>
+
+      <section class="install-section reveal">
+        <h2>Quick Install</h2>
+
+        <div class="install-step">
+          <div class="step-number">1</div>
+          <div class="step-content">
+            <h3>Using bunx (Recommended)</h3>
+            <p>
+              The fastest way to install Workaholic is using bunx.
+              <a
+                href="https://bun.com/docs/installation"
+                target="_blank"
+                rel="noopener"
+                style="color: var(--accent-primary)"
+                >Don't have bun? Install it here →</a
+              >
+            </p>
+            <div class="code-block">
+              <div class="code-header">
+                <div class="code-dot red"></div>
+                <div class="code-dot yellow"></div>
+                <div class="code-dot green"></div>
+                <span class="code-title">Terminal</span>
+              </div>
+              <div class="code-content">
+                <pre><code>bunx opencode-workaholic@latest install</code></pre>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="install-step">
+          <div class="step-number">2</div>
+          <div class="step-content">
+            <h3>Verify Installation</h3>
+            <p>After installation, you can start using Workaholic immediately:</p>
+            <div class="code-block">
+              <div class="code-header">
+                <div class="code-dot red"></div>
+                <div class="code-dot yellow"></div>
+                <div class="code-dot green"></div>
+                <span class="code-title">OpenCode</span>
+              </div>
+              <div class="code-content">
+                <pre><code>/workaholic Test the plugin, for 5 minutes</code></pre>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="install-section reveal">
+        <h2>Manual Installation</h2>
+
+        <div class="install-step">
+          <div class="step-number">1</div>
+          <div class="step-content">
+            <h3>Clone the Repository</h3>
+            <p>Clone or download the Workaholic plugin to your local machine:</p>
+            <div class="code-block">
+              <div class="code-header">
+                <div class="code-dot red"></div>
+                <div class="code-dot yellow"></div>
+                <div class="code-dot green"></div>
+                <span class="code-title">Terminal</span>
+              </div>
+              <div class="code-content">
+                <pre><code>git clone https://github.com/RoderickQiu/opencode-workaholic.git</code></pre>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="install-step">
+          <div class="step-number">2</div>
+          <div class="step-content">
+            <h3>Build the Plugin</h3>
+            <p>Install dependencies and build the plugin:</p>
+            <div class="code-block">
+              <div class="code-header">
+                <div class="code-dot red"></div>
+                <div class="code-dot yellow"></div>
+                <div class="code-dot green"></div>
+                <span class="code-title">Terminal</span>
+              </div>
+              <div class="code-content">
+                <pre><code>cd opencode-workaholic
+bun install
+mise run build</code></pre>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="install-step">
+          <div class="step-number">3</div>
+          <div class="step-content">
+            <h3>Configure OpenCode</h3>
+            <p>Add the plugin to your OpenCode configuration file:</p>
+            <div class="code-block">
+              <div class="code-header">
+                <div class="code-dot red"></div>
+                <div class="code-dot yellow"></div>
+                <div class="code-dot green"></div>
+                <span class="code-title">~/.config/opencode/opencode.json</span>
+              </div>
+              <div class="code-content">
+                <pre><code>{
+  "plugins": ["opencode-workaholic"]
+}</code></pre>
+              </div>
+            </div>
+            <p style="margin-top: 1rem">Or use a local path:</p>
+            <div class="code-block">
+              <div class="code-header">
+                <div class="code-dot red"></div>
+                <div class="code-dot yellow"></div>
+                <div class="code-dot green"></div>
+                <span class="code-title">~/.config/opencode/opencode.json</span>
+              </div>
+              <div class="code-content">
+                <pre><code>{
+  "plugins": ["file:///path/to/opencode-workaholic"]
+}</code></pre>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="install-section reveal">
+        <h2>Development</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 1.5rem">
+          If you want to develop or contribute to Workaholic:
+        </p>
+
+        <div class="code-block">
+          <div class="code-header">
+            <div class="code-dot red"></div>
+            <div class="code-dot yellow"></div>
+            <div class="code-dot green"></div>
+            <span class="code-title">Available Scripts</span>
+          </div>
+          <div class="code-content">
+            <pre><code>mise run build    # Build the plugin
+mise run test    # Run tests
+mise run lint    # Lint code
+mise run format  # Format code</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <div class="note warning">
+        <span class="note-icon">⚠️</span>
+        <p>
+          If you encounter any issues during installation, please check the
+          <a
+            href="https://github.com/RoderickQiu/opencode-workaholic/issues"
+            style="color: var(--accent-primary)"
+            >GitHub Issues</a
+          >
+          or open a new one for help.
+        </p>
+      </div>
+    </div>
+
+    <footer>
+      <div class="footer-content">
+        <div class="footer-links">
+          <a href="/">Home</a>
+          <a href="/api.html">API</a>
+          <a href="/install.html">Install</a>
+          <a
+            href="https://github.com/RoderickQiu/opencode-workaholic"
+            target="_blank"
+            rel="noopener"
+            >GitHub</a
+          >
+        </div>
+        <p class="footer-copy">© 2026 Roderick Qiu. MIT License.</p>
+      </div>
+    </footer>
+
+    <script>
+      const revealElements = document.querySelectorAll('.reveal');
+
+      function checkReveal() {
+        const windowHeight = window.innerHeight;
+        revealElements.forEach((el) => {
+          const elementTop = el.getBoundingClientRect().top;
+          const revealPoint = 150;
+          if (elementTop < windowHeight - revealPoint) {
+            el.classList.add('visible');
+          }
+        });
+      }
+
+      window.addEventListener('scroll', checkReveal);
+      checkReveal();
+    </script>
+  </body>
+</html>
