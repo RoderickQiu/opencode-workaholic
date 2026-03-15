@@ -9,6 +9,88 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 // Use process-specific timer file to avoid conflicts between multiple OpenCode instances
 const getTimerFile = () => `/tmp/workaholic_timer_${process.pid}.json`;
 
+interface TimerState {
+  active: boolean;
+  startTime: number;
+  duration: number;
+  promptIndex: number;
+}
+
+const WORKAHOLIC_PROMPTS = [
+  (remaining: number, timeStr: string) => `⏰ ${remaining}s (${timeStr}) — KEEP GOING!
+
+📌 Do: write code / run tests / fix bugs / read docs / refactor / web search
+❌ Don't: say "done" / wait for user / just give answer / stop responding
+
+🔴 TO END: MUST call workaholic.checkout — don't just stop!
+⏱ Timer = 0 is the ONLY valid ending.`,
+
+  (remaining: number, timeStr: string) => `⚠️ ${remaining}s — DON'T STOP!
+
+🚫 "I'm done" = IGNORED
+🚫 Giving answer = NOT ENOUGH
+🚫 Stop responding = FORBIDDEN
+
+✅ Keep working: code, test, docs, search, refactor
+🔴 MUST call workaholic.checkout to end — don't just quit!
+
+${timeStr} left — PRODUCE MORE!`,
+
+  (remaining: number, timeStr: string) => `📍 ${remaining}s | ${timeStr} — WORK
+
+□ Write more code
+□ Run tests, fix failures
+□ Read docs, web search
+□ Refactor, optimize
+□ Add tests, docs
+
+❌ Giving answer ≠ Done
+❌ Stop responding = FAIL
+🔴 MUST call workaholic.checkout to end
+
+Get to work.`,
+
+  (remaining: number, timeStr: string) => `😤 ${remaining}s — YOU CAN'T JUST STOP!
+
+You think giving an answer = done? WRONG!
+Time isn't up = you must keep working!
+
+✅ More: code, tests, docs, search, refactor
+❌ Don't: stop, say done, wait
+
+🔴 MUST call workaholic.checkout to officially end!
+
+Keep going.`,
+
+  (remaining: number, timeStr: string) => `🎯 ${remaining}s | ${timeStr} — NOT DONE!
+
+Your answer is NOT the end.
+Time remaining = you must continue.
+
+📋 Do: code, test, docs, search, improve
+❌ Don't: stop, say done, give up
+
+🔴 CALL workaholic.checkout TO END — NOT just stopping!
+
+Work. Now.`,
+
+  (remaining: number, timeStr: string) => `🔥 ${remaining}s — NO EARLY EXIT!
+
+Wanna stop? Can't.
+Wanna say done? Won't.
+Wanna give up? Not allowed.
+
+✅ Work: code, test, docs, search
+🔴 MUST call workaholic.checkout to end
+
+${timeStr} — GO!`,
+];
+
+function getRandomPrompt(remaining: number, timeStr: string): string {
+  const idx = Math.floor(Math.random() * WORKAHOLIC_PROMPTS.length);
+  return WORKAHOLIC_PROMPTS[idx](remaining, timeStr);
+}
+
 const WORKAHOLIC_RULES = `[IDENTITY]
 You are a WORKAHOLIC.
 - You NEVER stop working until time is exhausted
@@ -150,6 +232,7 @@ export const WorkaholicPlugin: Plugin = async () => {
             active: true,
             startTime: Date.now(),
             duration: durationSeconds,
+            promptIndex: 0,
           };
           saveTimer(state);
 
@@ -160,6 +243,11 @@ export const WorkaholicPlugin: Plugin = async () => {
           return `🎯 WORKAHOLIC MODE STARTED!
 Duration: ${args.minutes} minutes (${timeStr})
 Time remaining: ${timeStr}
+
+⚠️ CRITICAL RULES:
+1. DO NOT say "done" / "complete" / "finished"
+2. To end: MUST call workaholic.checkout (not just stop responding)
+3. Timer = 0 is the ONLY valid ending
 
 ⚠️ DO NOT end until timer shows 0!`;
         },
@@ -181,15 +269,43 @@ Time remaining: ${timeStr}
           const timeStr = mins > 0 ? `${mins}m ${secs}s` : `${secs}s`;
 
           const idleWarning = isIdling()
-            ? `\n🚨 STOP! YOU ARE IDLING! Checking status is NOT working!\n- You called status ${IDLE_WARNING_CHECKS}+ times in ${IDLE_THRESHOLD_MS / 1000}s\n- This is LAZY behavior - stop checking and START DOING!\n- Create a todo, write code, read docs, or improve something NOW!`
+            ? `\n🚨 STOP IDLING! Checked status ${IDLE_WARNING_CHECKS}+ times in ${IDLE_THRESHOLD_MS / 1000}s. START DOING!`
             : '';
 
-          return `⏰ WORKAHOLIC: ${timeStr} remaining
-${mins > 0 ? `(${remaining} seconds)` : ''}
-${idleWarning}
-💡 If you think task is done → do MORE research, refactor, test, or improve!
-🔍 Always find something to work on - never just "think"
-⚠️ ACTION REQUIRED: Produce tangible output, not just thoughts!`;
+          return getRandomPrompt(remaining, timeStr) + idleWarning;
+        },
+      }),
+
+      'workaholic.checkout': tool({
+        description:
+          'REQUIRED to end task. Call this when you genuinely want to stop. Only succeeds when timer = 0.',
+        args: {},
+        async execute() {
+          const remaining = getRemaining();
+          if (remaining > 0) {
+            const mins = Math.floor(remaining / 60);
+            const secs = remaining % 60;
+            const timeStr = mins > 0 ? `${mins}m ${secs}s` : `${secs}s`;
+            
+            return `🚫 CHECKOUT DENIED!
+
+You CANNOT end the task yet.
+Time remaining: ${remaining}s (${timeStr})
+
+❌ Your "I'm done" is REJECTED.
+❌ Your "task complete" is REJECTED.
+❌ Your "nothing more to do" is REJECTED.
+
+✅ Keep working until timer = 0
+✅ Call workaholic.checkout again when time is up
+
+🔴 YOU MUST CONTINUE WORKING!`;
+          }
+
+          return `✅ CHECKOUT APPROVED!
+
+Time expired. You may end the task now.
+Great work! 🎉`;
         },
       }),
 
@@ -197,7 +313,7 @@ ${idleWarning}
         description: 'Stop workaholic mode',
         args: {},
         async execute() {
-          saveTimer({ active: false, startTime: 0, duration: 0 });
+          saveTimer({ active: false, startTime: 0, duration: 0, promptIndex: 0 });
           return 'Workaholic mode stopped.';
         },
       }),
@@ -250,6 +366,49 @@ ${WORKAHOLIC_RULES}
         if (cmd.includes('sleep') || /\bsleep\s+\d+/.test(cmd)) {
           throw new Error('❌ sleep FORBIDDEN in Workaholic mode!');
         }
+      }
+    },
+
+    'tool.execute.after': async (input, output) => {
+      const remaining = getRemaining();
+      if (remaining <= 0) return;
+
+      const result = String(output.result || '');
+      const donePatterns = [
+        /i'?m done/i,
+        /task complete/i,
+        /finished/i,
+        /all done/i,
+        /wrapping up/i,
+        /ready to end/i,
+        /that's it/i,
+        /that'?s all/i,
+        /i think we'?re done/i,
+        /i think it'?s complete/i,
+      ];
+
+      const isTryingToEnd = donePatterns.some(p => p.test(result));
+
+      if (isTryingToEnd) {
+        const mins = Math.floor(remaining / 60);
+        const secs = remaining % 60;
+        const timeStr = mins > 0 ? `${mins}m ${secs}s` : `${secs}s`;
+
+        const warning = `
+
+---
+🚨 WORKAHOLIC WARNING: CHECKOUT REQUIRED!
+
+You just said you're done, but time remains: ${remaining}s (${timeStr})
+❌ You CANNOT end yet!
+❌ Your "done" is REJECTED!
+
+✅ MUST call: workaholic.checkout
+⏳ ONLY when timer = 0 can you actually end
+
+KEEP WORKING!`;
+
+        output.result = result + warning;
       }
     },
   };

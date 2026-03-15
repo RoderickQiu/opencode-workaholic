@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.3.0 (2025-03-15)
+
+### Features
+
+- **Checkout system**: Added `workaholic.checkout` - AI must call this to end task, only succeeds when timer = 0
+- **End detection hook**: `tool.execute.after` intercepts AI output and detects "done" language, forces continuation
+- **Random prompt rotation**: 6 different prompt styles rotate randomly to prevent AI from adapting
+
+### Improvements
+
+- **Stronger checkout enforcement**: Every status call now emphasizes MUST call checkout to end
+- **Compacter prompts**: Reduced prompt verbosity while maintaining impact
+- **Web search as fallback**: Prompts suggest "web search" when stuck, as optional action
+
+---
+
 ## 0.2.1 (2025-03-15)
 
 ### Features

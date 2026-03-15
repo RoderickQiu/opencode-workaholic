@@ -7,7 +7,7 @@
     <link rel="icon" type="image/svg+xml" href="favicon.svg" />
     <meta
       name="description"
-      content="OpenCode plugin that enforces minimum task duration. Prevents AI from ending tasks prematurely."
+      content="Workaholic enforces mandatory desk time for AI. No early exit, no faking. AI can't say 'done' until the timer hits zero."
     />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -230,7 +230,7 @@
       .hero p {
         font-size: clamp(1.125rem, 2vw, 1.375rem);
         color: var(--text-secondary);
-        max-width: 540px;
+        max-width: 600px;
         margin-bottom: 2.5rem;
         animation: fadeInUp 0.8s ease 0.2s forwards;
         opacity: 0;
@@ -290,25 +290,6 @@
       .btn-secondary:hover {
         background: var(--bg-secondary);
         border-color: var(--text-muted);
-      }
-
-      /* Timer Display */
-      .timer-display {
-        margin-top: 4rem;
-        padding: 2rem;
-        background: var(--bg-secondary);
-        border: 1px solid var(--border-color);
-        border-radius: 16px;
-        animation: fadeInUp 0.8s ease 0.4s forwards;
-        opacity: 0;
-      }
-
-      .timer-display code {
-        font-family: var(--font-mono);
-        font-size: 3rem;
-        font-weight: 500;
-        color: var(--accent-primary);
-        letter-spacing: 0.05em;
       }
 
       /* Features Section */
@@ -555,14 +536,18 @@
     </nav>
 
     <section class="hero">
-      <div class="hero-badge">OpenCode Plugin</div>
+      <div class="hero-badge">
+        <span>OpenCode Plugin for Mandatory Time</span>
+      </div>
       <h1>
-        Never Stop<br />
-        <span class="gradient-text">Until Time Expires</span>
+        AI says "done"<br />
+        <span class="gradient-text">at 30 seconds.</span>
       </h1>
       <p>
-        Enforces minimum task duration. Prevents AI from ending tasks prematurely before a time
-        limit expires. Stay focused. Keep working.
+        But edge cases? Untested.<br />
+        Bugs? Still there. Docs? Missing.<br />
+        Workaholic brings mandatory working time to AI. <br/>
+        No early exit.
       </p>
       <div class="hero-cta">
         <a
@@ -575,82 +560,66 @@
         </a>
         <a href="#usage" class="btn btn-secondary">Get Started</a>
       </div>
-      <div class="timer-display">
-        <code id="demo-timer">15:00</code>
-      </div>
     </section>
 
     <section class="features" id="features">
       <div class="section-header reveal">
-        <h2>Built for Deep Work</h2>
-        <p>Powerful features that keep you focused and prevent premature task completion.</p>
+        <h2>The Premature "Done" Problem</h2>
+        <p>AI has an early-exit problem. Workaholic fixes it:</p>
       </div>
       <div class="features-grid">
         <div class="feature-card reveal">
           <div class="feature-icon">⏱</div>
-          <h3>Timer Enforcement</h3>
-          <p>AI cannot end until the timer expires. Minimum duration guaranteed.</p>
+          <h3>No Early Exit</h3>
+          <p>You're grounded until time = 0. "Done" is not a valid response until the timer expires.</p>
         </div>
         <div class="feature-card reveal">
           <div class="feature-icon">🚫</div>
-          <h3>Sleep Blocking</h3>
-          <p>Prevents time-wasting via sleep commands. No more waiting.</p>
+          <h3>No Faking</h3>
+          <p>Sleep commands are blocked. Status-checking is tracked. No way to pretend productivity.</p>
         </div>
         <div class="feature-card reveal">
-          <div class="feature-icon">🔄</div>
-          <h3>Persistent Timer</h3>
-          <p>Timer survives across messages. Context is always maintained.</p>
-        </div>
-        <div class="feature-card reveal">
-          <div class="feature-icon">📊</div>
-          <h3>Status Checking</h3>
-          <p>Always knows remaining time. Real-time timer status available.</p>
-        </div>
-        <div class="feature-card reveal">
-          <div class="feature-icon">💪</div>
-          <h3>Behavioral Prompts</h3>
-          <p>Strong prompts reinforce the workaholic mindset automatically.</p>
-        </div>
-        <div class="feature-card reveal">
-          <div class="feature-icon">✨</div>
-          <h3>Task Proposals</h3>
-          <p>Encourages AI to propose new tasks when todos are complete.</p>
+          <div class="feature-icon">🧠</div>
+          <h3>Deep Iteration</h3>
+          <p>Forces real work: research, refactor, test, improve. Not just "thinking" — producing.</p>
         </div>
       </div>
     </section>
 
     <section class="usage" id="usage">
       <div class="section-header reveal">
-        <h2>How It Works</h2>
-        <p>Three simple steps to enforced productivity.</p>
+        <h2>The Rules</h2>
+        <p>Mandatory desk time. No exceptions.</p>
       </div>
       <div class="usage-steps">
         <div class="usage-step reveal">
           <div class="step-number">1</div>
           <div class="step-content">
-            <h3>Start the Timer</h3>
+            <h3>Rule: No Early Exit</h3>
             <p>
-              Invoke /workaholic in OpenCode or use the tool directly with your desired duration.
+              When todos complete, find more work. Research alternatives. Improve edge cases. Write docs. 
+              There's always something to do. "I'm done" is not allowed until time = 0.
             </p>
-            <code>/workaholic [Your requirements, for xxx minutes]</code>
+            <code>Only ONE valid ending: timer shows EXACTLY 0</code>
           </div>
         </div>
         <div class="usage-step reveal">
           <div class="step-number">2</div>
           <div class="step-content">
-            <h3>Work Continuously</h3>
-            <p>Every response automatically checks remaining time. Sleep commands are blocked.</p>
-            <code>AI cannot end until timer shows 0</code>
+            <h3>Rule: No Faking</h3>
+            <p>Sleep commands are blocked. Checking status repeatedly = idling. You must be producing, not waiting.</p>
+            <code>Sleep = FORBIDDEN. Checking status ≠ working.</code>
           </div>
         </div>
         <div class="usage-step reveal">
           <div class="step-number">3</div>
           <div class="step-content">
-            <h3>Complete or Propose More</h3>
+            <h3>Rule: Checkout Required</h3>
             <p>
-              When time expires, either finish up or propose additional tasks to continue working.
+              To end: you MUST call workahaholic.checkout. And it only works when timer = 0. 
+              Until then? You're grounded. Keep working.
             </p>
-            <code>Time's up only when remaining = 0</code>
+            <code>workaholic.checkout only succeeds at 0</code>
           </div>
         </div>
       </div>
@@ -682,28 +651,6 @@
     </footer>
 
     <script>
-      // Demo timer animation
-      let timeLeft = 15 * 60;
-      const timerDisplay = document.getElementById('demo-timer');
-
-      function updateTimer() {
-        const minutes = Math.floor(timeLeft / 60);
-        const seconds = timeLeft % 60;
-        timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-
-        // Subtle color shift as time passes
-        const progress = 1 - timeLeft / (15 * 60);
-        const hue = 30 - progress * 20; // Orange to red-orange
-        timerDisplay.style.color = `hsl(${hue}, 100%, 55%)`;
-
-        if (timeLeft > 0) {
-          timeLeft--;
-        }
-      }
-
-      updateTimer();
-      setInterval(updateTimer, 1000);
-
       // Scroll reveal animation
       const revealElements = document.querySelectorAll('.reveal');
 

@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>API Reference — Workaholic</title>
+    <title>API Reference — Workaholic for OpenCode</title>
     <link rel="icon" type="image/svg+xml" href="favicon.svg" />
     <meta name="description" content="Complete API documentation for Workaholic plugin." />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -540,8 +540,8 @@
             <span class="tool-name">/workaholic</span>
             <span class="tool-badge">Command</span>
           </div>
-          <p class="tool-description">
-            Slash command to start workaholic mode. Provide your requirements and desired duration
+        <p class="tool-description">
+            Slash command to start workaholic mode in OpenCode. Provide your requirements and desired duration
             in natural language.
           </p>
 
@@ -622,6 +622,37 @@
             <div class="example-label">Example</div>
             <pre><code>Call workaholic.status to see remaining time</code></pre>
           </div>
+        </div>
+
+        <!-- workaholic.checkout -->
+        <div class="tool-card">
+          <div class="tool-header">
+            <span class="tool-name">workaholic.checkout</span>
+            <span class="tool-badge tool">Tool</span>
+          </div>
+          <p class="tool-description">
+            <strong>REQUIRED to end the task.</strong> This is the only valid way to exit workaholic mode. 
+            Call this when you genuinely want to stop — but it only succeeds when the timer has expired (remaining = 0).
+          </p>
+
+          <div class="return-value">
+            <div class="return-label">Returns</div>
+            <span class="return-type">object</span> - Contains success/failure status and message
+          </div>
+
+          <div class="example">
+            <div class="example-label">Example</div>
+            <pre><code>Call workaholic.checkout to end the task (only works when time = 0)</code></pre>
+          </div>
+
+          <ul style="color: var(--text-secondary); margin-top: 1rem; padding-left: 1.5rem">
+            <li style="margin-bottom: 0.5rem">
+              If time remains: returns <strong style="color: #ef4444">CHECKOUT DENIED</strong> with remaining time
+            </li>
+            <li>
+              If time = 0: returns <strong style="color: #22c55e">CHECKOUT APPROVED</strong> — task can end
+            </li>
+          </ul>
         </div>
 
         <!-- workaholic.stop -->
