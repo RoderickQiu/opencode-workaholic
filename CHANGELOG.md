@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.4.0 (2026-03-19)
+
+### Fixed
+
+- **Tool name validation failure**: Tool names now use underscores instead of dots (e.g., `workaholic_start` instead of `workaholic.start`) to comply with OpenCode's stricter tool name validation pattern `^[a-zA-Z0-9_-]+$`. This fixes the issue where the plugin would fail to load on newer OpenCode versions.
+
+---
+
 ## 0.3.0 (2025-03-15)
 
 ### Features

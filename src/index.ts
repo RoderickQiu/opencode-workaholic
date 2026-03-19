@@ -22,7 +22,7 @@ const WORKAHOLIC_PROMPTS = [
 📌 Do: write code / run tests / fix bugs / read docs / refactor / web search
 ❌ Don't: say "done" / wait for user / just give answer / stop responding
 
-🔴 TO END: MUST call workaholic.checkout — don't just stop!
+🔴 TO END: MUST call workaholic_checkout — don't just stop!
 ⏱ Timer = 0 is the ONLY valid ending.`,
 
   (remaining: number, timeStr: string) => `⚠️ ${remaining}s — DON'T STOP!
@@ -32,7 +32,7 @@ const WORKAHOLIC_PROMPTS = [
 🚫 Stop responding = FORBIDDEN
 
 ✅ Keep working: code, test, docs, search, refactor
-🔴 MUST call workaholic.checkout to end — don't just quit!
+🔴 MUST call workaholic_checkout to end — don't just quit!
 
 ${timeStr} left — PRODUCE MORE!`,
 
@@ -46,7 +46,7 @@ ${timeStr} left — PRODUCE MORE!`,
 
 ❌ Giving answer ≠ Done
 ❌ Stop responding = FAIL
-🔴 MUST call workaholic.checkout to end
+🔴 MUST call workaholic_checkout to end
 
 Get to work.`,
 
@@ -58,7 +58,7 @@ Time isn't up = you must keep working!
 ✅ More: code, tests, docs, search, refactor
 ❌ Don't: stop, say done, wait
 
-🔴 MUST call workaholic.checkout to officially end!
+🔴 MUST call workaholic_checkout to officially end!
 
 Keep going.`,
 
@@ -70,7 +70,7 @@ Time remaining = you must continue.
 📋 Do: code, test, docs, search, improve
 ❌ Don't: stop, say done, give up
 
-🔴 CALL workaholic.checkout TO END — NOT just stopping!
+🔴 CALL workaholic_checkout TO END — NOT just stopping!
 
 Work. Now.`,
 
@@ -81,7 +81,7 @@ Wanna say done? Won't.
 Wanna give up? Not allowed.
 
 ✅ Work: code, test, docs, search
-🔴 MUST call workaholic.checkout to end
+🔴 MUST call workaholic_checkout to end
 
 ${timeStr} — GO!`,
 ];
@@ -100,7 +100,7 @@ You are a WORKAHOLIC.
 
 [RULES]
 - NEVER use sleep command (FORBIDDEN)
-- NEVER call workaholic.status - you DON'T NEED to know the exact time
+- NEVER call workaholic_status - you DON'T NEED to know the exact time
 - Just KEEP WORKING until you physically cannot continue
 - Checking status is NOT working - only DOING things counts
 
@@ -217,7 +217,7 @@ export const WorkaholicPlugin: Plugin = async () => {
 
   return {
     tool: {
-      'workaholic.start': tool({
+      workaholic_start: tool({
         description: 'Start workaholic mode - enforces minimum work duration',
         args: {
           minutes: tool.schema
@@ -246,14 +246,14 @@ Time remaining: ${timeStr}
 
 ⚠️ CRITICAL RULES:
 1. DO NOT say "done" / "complete" / "finished"
-2. To end: MUST call workaholic.checkout (not just stop responding)
+2. To end: MUST call workaholic_checkout (not just stop responding)
 3. Timer = 0 is the ONLY valid ending
 
 ⚠️ DO NOT end until timer shows 0!`;
         },
       }),
 
-      'workaholic.status': tool({
+      workaholic_status: tool({
         description:
           'Check remaining time in workaholic mode (only call when you really need to know)',
         args: {},
@@ -276,7 +276,7 @@ Time remaining: ${timeStr}
         },
       }),
 
-      'workaholic.checkout': tool({
+      workaholic_checkout: tool({
         description:
           'REQUIRED to end task. Call this when you genuinely want to stop. Only succeeds when timer = 0.',
         args: {},
@@ -286,7 +286,7 @@ Time remaining: ${timeStr}
             const mins = Math.floor(remaining / 60);
             const secs = remaining % 60;
             const timeStr = mins > 0 ? `${mins}m ${secs}s` : `${secs}s`;
-            
+
             return `🚫 CHECKOUT DENIED!
 
 You CANNOT end the task yet.
@@ -297,7 +297,7 @@ Time remaining: ${remaining}s (${timeStr})
 ❌ Your "nothing more to do" is REJECTED.
 
 ✅ Keep working until timer = 0
-✅ Call workaholic.checkout again when time is up
+✅ Call workaholic_checkout again when time is up
 
 🔴 YOU MUST CONTINUE WORKING!`;
           }
@@ -309,7 +309,7 @@ Great work! 🎉`;
         },
       }),
 
-      'workaholic.stop': tool({
+      workaholic_stop: tool({
         description: 'Stop workaholic mode',
         args: {},
         async execute() {
@@ -387,7 +387,7 @@ ${WORKAHOLIC_RULES}
         /i think it'?s complete/i,
       ];
 
-      const isTryingToEnd = donePatterns.some(p => p.test(result));
+      const isTryingToEnd = donePatterns.some((p) => p.test(result));
 
       if (isTryingToEnd) {
         const mins = Math.floor(remaining / 60);
@@ -403,7 +403,7 @@ You just said you're done, but time remains: ${remaining}s (${timeStr})
 ❌ You CANNOT end yet!
 ❌ Your "done" is REJECTED!
 
-✅ MUST call: workaholic.checkout
+✅ MUST call: workaholic_checkout
 ⏳ ONLY when timer = 0 can you actually end
 
 KEEP WORKING!`;
