@@ -95,7 +95,7 @@ Edit `~/.config/opencode/opencode.json`:
 
 ```json
 {
-  "plugins": ["opencode-workaholic"]
+  "plugin": ["opencode-workaholic"]
 }
 ```
 
@@ -103,7 +103,7 @@ Or use local path:
 
 ```json
 {
-  "plugins": ["file:///<path-to>/opencode-workaholic"]
+  "plugin": ["file:///<path-to>/opencode-workaholic"]
 }
 ```
 
